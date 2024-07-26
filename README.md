@@ -13,4 +13,12 @@ The config is kept in the /home/USER/.config/serverControl.cfg
 The config provides the paths and some varables for the program
 The possible items are: screenName, serverPath, backupPath, playerdataBackupPath, and amountOfRam.
 The way the file is formated is:
+
 ITEM NAME = VALUE
+
+# Planned Features
+Ability to edit paths and values when in the program
+
+An installer
+
+Ability to choose which backup to restore
