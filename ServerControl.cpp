@@ -18,7 +18,7 @@ string pBackupPath = " ";
 string amountOfRam = "4";
 string jarName = "server.jar";
 int lineCount = 50;
-string lineBuffer[1000];
+string lineBuffer[1000];//This is set to a high number so that there is some overflow and also because I don't know how to reset an array
 bool doingWork = false;
 string user = getenv("USER");//get username code from: https://gist.github.com/krishna0512/5e5f8761a24ea850f0bd
 
@@ -74,6 +74,13 @@ void setServerStatus(){
     } else{
         lineBuffer[4] = "Server Status: " + red + "Offline" + color_Off;
     }
+}
+
+void setTop(){
+    lineBuffer[0] = "(1) Start Server (2) Stop Server (3) Restart Server (4) Make Backup (5) Delete Most Backups";
+    lineBuffer[1] = "(6) Restore Last Backup (7) Kick all Players (8)Edit config Values";
+    lineBuffer[2] = "(q) Quits the Program (c) Clears the Log";
+    setServerStatus();
 }
 
 //The next 4 functions are from https://stackoverflow.com/questions/7469139/what-is-the-equivalent-to-getch-getche-in-linux
@@ -158,6 +165,96 @@ void indefWaitingWithMessage(int logLine, string message){//allows long waiting 
     return;
 }
 
+void partialRefresh(){
+    system("clear");
+    for(int i=0;i<8;i++){
+        cout << lineBuffer[i] << endl;
+    }
+}
+
+void changeMenuReset(){
+    lineBuffer[0] = "(1)Server Jar Name: " + jarName;
+    lineBuffer[1] = "(2)Server Path: " + serverPath;
+    lineBuffer[2] = "(3)Amount of Ram: " + amountOfRam;
+    lineBuffer[3] = "(4)Backup Path: " + backupPath;
+    lineBuffer[4] = "(5)Playerdata Backup Path: " + pBackupPath;
+    lineBuffer[5] = "(b)Return to previous menu";
+}
+
+void changeConfig(){//This is used to change the config file
+    for(int i=0;i<lineCount-1;i++){//clears out the screen
+            lineBuffer[i] = " ";
+    }
+    changeMenuReset();
+    char c;
+    while(c!='b'){
+        changeMenuReset();
+        partialRefresh();
+        c = getch();
+        resetTermios();
+        if(c=='1'){
+            lineBuffer[7] = "Please type in the name of the server jar";
+            partialRefresh();
+            cin >> jarName;
+            lineBuffer[7] = "Done!";
+        } else if(c=='2'){
+            lineBuffer[7] = "Please type in the path of the server";
+            partialRefresh();
+            cin >> serverPath;
+            lineBuffer[7] = "Done!";
+        } else if(c=='3'){
+            lineBuffer[7] = "Please type in the Amount of Ram for the server";
+            partialRefresh();
+            cin >> amountOfRam;
+            lineBuffer[7] = "Done!";
+        } else if(c=='4'){
+            lineBuffer[7] = "Please type in the backup path for the server";
+            partialRefresh();
+            cin >> backupPath;
+            lineBuffer[7] = "Done!";
+        } else if(c=='5'){
+            lineBuffer[7] = "Please type in the playerdata backup path for the server";
+            partialRefresh();
+            cin >> pBackupPath;
+            lineBuffer[7] = "Done!";
+        }
+    }
+    lineBuffer[7] = "Writing Changes to the config File";
+    ifstream configFile("/home/" + user + "/.config/serverControl.cfg");
+    ofstream outConfigFile("temp.txt");
+    if(!configFile.is_open()){
+        cout << "Could not open the config file\nExit code 1" << endl;
+        exit;
+    }
+    string configLine;
+    while (getline(configFile, configLine)) {//gets the needed info from the config file
+        if(configLine.find("screenName") != std::string::npos){
+            outConfigFile<<"screenName = " + serverName<<endl;
+        } else if(configLine.find("serverPath") != std::string::npos){
+            outConfigFile<<"serverPath = " + serverPath<<endl;
+        } else if(configLine.find("backupPath") != std::string::npos){
+            outConfigFile<<"backupPath = " + backupPath<<endl;
+        } else if(configLine.find("playerdataBackupPath") != std::string::npos){
+            outConfigFile<<"playerdataBackupPath = " + pBackupPath<<endl;
+        } else if(configLine.find("amountOfRam") != std::string::npos){
+            outConfigFile<<"amountOfRam = " + amountOfRam<<endl;
+        } else if(configLine.find("jarName") != std::string::npos){
+            outConfigFile<<"jarName = " + jarName<<endl;
+        } else{
+            outConfigFile<<configLine<<endl;
+        }
+    } 
+    configFile.close(); 
+    outConfigFile.close();
+    exec("rm /home/" + user + "/.config/serverControl.cfg");
+    exec("mv temp.txt /home/" + user + "/.config/serverControl.cfg");
+    for(int i=0;i<lineCount-1;i++){//clears out the screen
+            lineBuffer[i] = " ";
+    }
+    setTop();
+    return;
+}
+
 int main(){
     ifstream configFile("/home/" + user + "/.config/serverControl.cfg");
     if(!configFile.is_open()){
@@ -176,6 +273,8 @@ int main(){
             pBackupPath = configLine.substr(23);
         } else if(configLine.find("amountOfRam") != std::string::npos){
             amountOfRam = configLine.substr(14);
+        } else if(configLine.find("jarName") != std::string::npos){
+            jarName = configLine.substr(10);
         }
     } 
     configFile.close(); 
@@ -186,10 +285,7 @@ int main(){
     for(int i=0;i<lineCount+1;i++){
         lineBuffer[i] = " ";
     }
-    lineBuffer[0] = "(1) Start Server (2) Stop Server (3) Restart Server (4) Make Backup (5) Delete Most Backups";
-    lineBuffer[1] = "(6) Restore Last Backup (7) Kick all Players";
-    lineBuffer[2] = "(q) Quits the Program (c) Clears the Log";
-    setServerStatus();
+    setTop();
     bool isRunning = true;
     char c = ' ';
     int logLine = 6;
@@ -315,6 +411,8 @@ int main(){
             lineBuffer[i] = " ";
             }
             logLine = 6;
+        } else if(c=='8'){
+            changeConfig();
         }
         refreshScreen();
         logLine++;
