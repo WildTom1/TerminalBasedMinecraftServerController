@@ -17,7 +17,6 @@ The way the file is formated is:
 ITEM NAME = VALUE
 
 # Planned Features
-Ability to edit paths and values when in the program
 
 An installer
 
