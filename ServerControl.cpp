@@ -414,6 +414,7 @@ int main(){
             logLine = 6;
         } else if(c=='8'){
             changeConfig();
+            logLine = 5;
         }
         refreshScreen();
         logLine++;
