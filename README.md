@@ -6,6 +6,7 @@ It provides ways to start, stop, reset the server, aswell as make, delete, and r
 
 # Requirements
 The screen program
+
 A minecraft server
 
 # Config
@@ -17,7 +18,5 @@ The way the file is formated is:
 ITEM NAME = VALUE
 
 # Planned Features
-
-An installer
 
 Ability to choose which backup to restore
