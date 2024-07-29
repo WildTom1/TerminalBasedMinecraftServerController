@@ -20,3 +20,5 @@ ITEM NAME = VALUE
 # Planned Features
 
 Ability to choose which backup to restore
+
+Add update feature
