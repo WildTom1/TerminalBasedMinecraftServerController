@@ -296,8 +296,9 @@ int main(){
         c = getch();
         if(logLine == lineCount-1){
             for(int i=6;i<lineCount;i++){
-            lineBuffer[i] = lineBuffer[i+1];
-        }
+                lineBuffer[i] = lineBuffer[i+1];
+            }
+            logLine--;
         }
         if(c == 'q'){//quits the loop
             isRunning = false;
