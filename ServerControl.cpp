@@ -305,7 +305,6 @@ int main(){
             break;
         } else if(c=='1'){//starts the server
             if(!serverOn()){
-                lineBuffer[logLine] = serverPath + " hehe";
                 refreshScreen();
                 std::filesystem::current_path(serverPath);
                 //exec("cd " + serverPath);
